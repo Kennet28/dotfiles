@@ -175,12 +175,15 @@ screens = [
                 icon(bg="color3", text=' '),  # Icon: nf-fa-feed
                 widget.Net(**base(bg='color3'), interface='wlp2s0'),
                 powerline('color1', 'color3'),
-                widget.CurrentLayoutIcon(**base(bg='color1'), scale=0.65),
-                widget.CurrentLayout(**base(bg='color1'), padding=5),
+                widget.CPU(**base(bg='color1'), padding=5),
+                widget.ThermalSensor(**base(bg='color1'), padding=5),
                 powerline('color2', 'color1'),
+                icon(bg="color2", text=' '),  # Icon: nf-fa-feed
                 widget.Clock(**base(bg='color2'), format='%d/%m/%Y - %H:%M '),
                 powerline('dark', 'color2'),
-                widget.Systray(background=colors['dark'], padding=5),
+                # widget.Systray(background=colors['dark'], padding=5),
+                widget.CapsNumLockIndicator(),
+                widget.BatteryIcon(**base(bg='dark')), #Baterry Icon
             ],
             24,
         ),
