@@ -54,7 +54,7 @@ keys = [
     Key([], "XF86MonBrightnessUp", lazy.spawn("brightnessctl set +10%")),
     Key([], "XF86MonBrightnessDown", lazy.spawn("brightnessctl set 10%-")),
 ]
-groups = [Group(i) for i in ["  ", "  ", "  ", "", "甆"]]
+groups = [Group(i) for i in ["  ", "  ", "  ", "  ", " 甆 "]]
 
 for i, group in enumerate(groups):
     actual_key = str(i+1)
