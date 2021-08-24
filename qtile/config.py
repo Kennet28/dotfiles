@@ -1,21 +1,12 @@
-from typing import List  # noqa: F401
+from os import system
 from libqtile import bar, layout, widget
 from libqtile.config import Click, Drag, Group, Key, Screen
 from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
-import os
-# from libqtile import hook
-
-# from settings.keys import mod, keys
+# from libqtile.widget.net import Net
+from settings.theme import colors
 # from settings.groups import groups
-# from settings.layouts import layouts, floating_layout
-# from settings.widgets import widget_defaults
-# #, extension_defaults
-# from settings.screens import screens
-# from settings.mouse import mouse
-# from settings.path import qtile_path
 
-from os import path,system
 mod = "mod4"
 terminal = guess_terminal()
 
@@ -52,76 +43,144 @@ keys = [
     Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown qtile"),
     Key([mod], "r", lazy.spawncmd(),
         desc="Spawn a command using a prompt widget"),
-    # rofi
+    # Rofi
     Key([mod], "m", lazy.spawn("rofi -show run")),
     Key([mod, 'shift'], "m", lazy.spawn("rofi -show")),
-    # Volumen
+    # Volume
     Key([], "XF86AudioLowerVolume", lazy.spawn("pamixer --decrease 5")),
     Key([], "XF86AudioRaiseVolume", lazy.spawn("pamixer --increase 5")),
     Key([], "XF86AudioMute", lazy.spawn("pamixer --toggle-mute")),
-    # Brillo
+    # Brightness
     Key([], "XF86MonBrightnessUp", lazy.spawn("brightnessctl set +10%")),
     Key([], "XF86MonBrightnessDown", lazy.spawn("brightnessctl set 10%-")),
 ]
+groups = [Group(i) for i in ["  ", "  ", "  ", "", "甆"]]
 
-groups = [Group(i) for i in "asdfuiop"]
-
-for i in groups:
+for i, group in enumerate(groups):
+    actual_key = str(i+1)
     keys.extend([
-        Key([mod], i.name, lazy.group[i.name].toscreen(),
-            desc="Switch to group {}".format(i.name)),
-
-        Key([mod, "shift"], i.name, lazy.window.togroup(i.name, switch_group=True),
-            desc="Switch to & move focused window to group {}".format(i.name)),
+        Key([mod], actual_key, lazy.group[group.name].toscreen()),
+        Key([mod, "shift"], actual_key, lazy.window.togroup(group.name))
     ])
+# Workspaces
+
+# groups = [Group(i) for i in "asdfuiop"]
+
+# for i in groups:
+#     keys.extend([
+#         Key([mod], i.name, lazy.group[i.name].toscreen(),
+#             desc="Switch to group {}".format(i.name)),
+
+#         Key([mod, "shift"], i.name, lazy.window.togroup(i.name, switch_group=True),
+#             desc="Switch to & move focused window to group {}".format(i.name)),
+#     ])
+
 layouts = [
     layout.MonadTall()
 ]
 
 widget_defaults = dict(
-    font='sans',
+    font='UbuntuMono Nerd Font Bold',
     fontsize=14,
-    padding=3,
+    padding=1,
 )
 extension_defaults = widget_defaults.copy()
 
+
+#
+
+
+def base(fg='text', bg='dark'):
+    return {
+        'foreground': colors[fg],
+        'background': colors[bg]
+    }
+
+
+def separator():
+    return widget.Sep(**base(), linewidth=0, padding=5)
+
+
+def icon(fg='text', bg='dark', fontsize=16, text="?"):
+    return widget.TextBox(
+        **base(fg, bg),
+        fontsize=fontsize,
+        text=text,
+        padding=3
+    )
+
+
+def powerline(fg="light", bg="dark"):
+    return widget.TextBox(
+        **base(fg, bg),
+        text="",  # Icon: nf-oct-triangle_left
+        fontsize=37,
+        padding=-2
+    )
+
+
+# Screens
 screens = [
     Screen(
         bottom=bar.Bar(
             [
-                widget.CurrentLayout(),
-                widget.GroupBox(),
-                widget.Prompt(),
-                widget.WindowName(),
-                widget.Chord(
-                    chords_colors={
-                        'launch': ("#ff0000", "#ffffff"),
-                    },
-                    name_transform=lambda name: name.upper(),
+                widget.GroupBox(
+                    **base(fg='light'),
+                    font='UbuntuMono Nerd Font',
+                    fontsize=19,
+                    margin_y=3,
+                    margin_x=0,
+                    padding_y=8,
+                    padding_x=5,
+                    borderwidth=1,
+                    active=colors['active'],
+                    inactive=colors['inactive'],
+                    rounded=False,
+                    highlight_method='block',
+                    urgent_alert_method='block',
+                    urgent_border=colors['urgent'],
+                    this_current_screen_border=colors['focus'],
+                    this_screen_border=colors['grey'],
+                    other_current_screen_border=colors['dark'],
+                    other_screen_border=colors['dark'],
+                    disable_drag=True
                 ),
-                widget.Systray(),
-                widget.Clock(format='%Y-%m-%d %a %I:%M %p'),
-                widget.QuickExit(),
-            ],
-            24,
-        ),
-    ),
-    Screen(
-        bottom=bar.Bar(
-            [
-                widget.CurrentLayout(),
-                widget.GroupBox(),
-                widget.Prompt(),
-                widget.WindowName(),
-                widget.Chord(
-                    chords_colors={
-                        'launch': ("#ff0000", "#ffffff"),
-                    },
-                    name_transform=lambda name: name.upper(),
+
+                
+                # widget.Prompt(),
+                # widget.Chord(
+                #     chords_colors={
+                #         'launch': ("#ff0000", "#ffffff"),
+                #     },
+                #     name_transform=lambda name: name.upper(),
+                # ),
+                separator(),
+                widget.WindowName(**base(fg='focus'), fontsize=14, padding=5),
+                separator(),
+
+                powerline('color4', 'dark'),
+
+                icon(bg="color4", text=' '),  # Icon: nf-fa-download
+
+                widget.CheckUpdates(
+                    background=colors['color4'],
+                    colour_have_updates=colors['text'],
+                    colour_no_updates=colors['text'],
+                    no_update_string='0',
+                    display_format='{updates}',
+                    update_interval=1800,
+                    custom_command='checkupdates',
                 ),
-                widget.Systray(),
-                widget.Clock(format='%Y-%m-%d %a %I:%M %p'),
-                widget.QuickExit(),
+                powerline('color3', 'color4'),
+                icon(bg="color3", text=' '),  # Icon: nf-fa-feed
+                widget.Net(**base(bg='color3'), interface='wlp2s0'),
+                powerline('color1', 'color3'),
+                widget.CurrentLayoutIcon(**base(bg='color1'), scale=0.65),
+                widget.CurrentLayout(**base(bg='color1'), padding=5),
+                powerline('color2', 'color1'),
+                widget.Clock(**base(bg='color2'), format='%d/%m/%Y - %H:%M '),
+                powerline('dark', 'color2'),
+                widget.Systray(background=colors['dark'], padding=5),
             ],
             24,
         ),
@@ -162,12 +221,12 @@ floating_layout = layout.Floating(float_rules=[
 auto_fullscreen = True
 focus_on_window_activation = "smart"
 
-
+# Name
 wmname = "LG3D"
-
+# Autostart config
 autoStart = [
     "setxkbmap -layout latam",
-    "feh --bg-fill /home/kennet28/.config/qtile/wallpapers/01.png"
+    "feh --bg-fill ~/.config/qtile/wallpapers/01.png"
 ]
 
 for command in autoStart:
