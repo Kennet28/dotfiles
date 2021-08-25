@@ -3,9 +3,7 @@ from libqtile import bar, layout, widget
 from libqtile.config import Click, Drag, Group, Key, Screen
 from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
-# from libqtile.widget.net import Net
 from settings.theme import colors
-# from settings.groups import groups
 
 mod = "mod4"
 terminal = guess_terminal()
@@ -171,18 +169,24 @@ screens = [
                     update_interval=1800,
                     custom_command='checkupdates',
                 ),
+                #Network
                 powerline('color3', 'color4'),
                 icon(bg="color3", text=' '),  # Icon: nf-fa-feed
                 widget.Net(**base(bg='color3'), interface='wlp2s0'),
                 powerline('color1', 'color3'),
+                #CPU and temperature
                 widget.CPU(**base(bg='color1'), padding=5),
                 widget.ThermalSensor(**base(bg='color1'), padding=5),
+                #calendar
                 powerline('color2', 'color1'),
                 icon(bg="color2", text=' '),  # Icon: nf-fa-feed
                 widget.Clock(**base(bg='color2'), format='%d/%m/%Y - %H:%M '),
                 powerline('dark', 'color2'),
-                # widget.Systray(background=colors['dark'], padding=5),
-                widget.CapsNumLockIndicator(),
+                #systray
+                icon(fg='light',text='  '),
+                widget.PulseVolume(**base(bg='dark',fg='light')),
+                separator(),
+                widget.CapsNumLockIndicator(**base(bg='dark',fg='light')),
                 widget.BatteryIcon(**base(bg='dark')), #Baterry Icon
             ],
             24,
