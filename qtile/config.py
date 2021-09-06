@@ -4,7 +4,7 @@ from libqtile.config import Click, Drag, Group, Key, Screen
 from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
 from settings.theme import colors
-
+from settings.utils import base, separator, icon, powerline
 mod = "mod4"
 terminal = guess_terminal()
 
@@ -52,6 +52,7 @@ keys = [
     Key([], "XF86MonBrightnessUp", lazy.spawn("brightnessctl set +10%")),
     Key([], "XF86MonBrightnessDown", lazy.spawn("brightnessctl set 10%-")),
 ]
+# workspaces
 groups = [Group(i) for i in ["  ", "  ", "  ", "  ", " 甆 "]]
 
 for i, group in enumerate(groups):
@@ -60,68 +61,24 @@ for i, group in enumerate(groups):
         Key([mod], actual_key, lazy.group[group.name].toscreen()),
         Key([mod, "shift"], actual_key, lazy.window.togroup(group.name))
     ])
-# Workspaces
 
-# groups = [Group(i) for i in "asdfuiop"]
-
-# for i in groups:
-#     keys.extend([
-#         Key([mod], i.name, lazy.group[i.name].toscreen(),
-#             desc="Switch to group {}".format(i.name)),
-
-#         Key([mod, "shift"], i.name, lazy.window.togroup(i.name, switch_group=True),
-#             desc="Switch to & move focused window to group {}".format(i.name)),
-#     ])
-
+#layouts
 layouts = [
     layout.MonadTall()
 ]
-
+#widgets styles
 widget_defaults = dict(
     font='UbuntuMono Nerd Font Bold',
     fontsize=14,
     padding=1,
 )
 extension_defaults = widget_defaults.copy()
-
-
-#
-
-
-def base(fg='text', bg='dark'):
-    return {
-        'foreground': colors[fg],
-        'background': colors[bg]
-    }
-
-
-def separator():
-    return widget.Sep(**base(), linewidth=0, padding=5)
-
-
-def icon(fg='text', bg='dark', fontsize=16, text="?"):
-    return widget.TextBox(
-        **base(fg, bg),
-        fontsize=fontsize,
-        text=text,
-        padding=3
-    )
-
-
-def powerline(fg="light", bg="dark"):
-    return widget.TextBox(
-        **base(fg, bg),
-        text="",  # Icon: nf-oct-triangle_left
-        fontsize=37,
-        padding=-2
-    )
-
-
 # Screens
 screens = [
     Screen(
         bottom=bar.Bar(
             [
+                # workspaces styles
                 widget.GroupBox(
                     **base(fg='light'),
                     font='UbuntuMono Nerd Font',
@@ -143,23 +100,13 @@ screens = [
                     other_screen_border=colors['dark'],
                     disable_drag=True
                 ),
-
-                
-                # widget.Prompt(),
-                # widget.Chord(
-                #     chords_colors={
-                #         'launch': ("#ff0000", "#ffffff"),
-                #     },
-                #     name_transform=lambda name: name.upper(),
-                # ),
                 separator(),
+                # Window name
                 widget.WindowName(**base(fg='focus'), fontsize=14, padding=5),
                 separator(),
-
                 powerline('color4', 'dark'),
-
                 icon(bg="color4", text=' '),  # Icon: nf-fa-download
-
+                # updates
                 widget.CheckUpdates(
                     background=colors['color4'],
                     colour_have_updates=colors['text'],
@@ -169,7 +116,7 @@ screens = [
                     update_interval=1800,
                     custom_command='checkupdates',
                 ),
-                #Network
+                # Network
                 powerline('color3', 'color4'),
                 icon(bg="color3", text=' '),  # Icon: nf-fa-feed
                 widget.Net(**base(bg='color3'), interface='wlp2s0'),
@@ -177,17 +124,17 @@ screens = [
                 #CPU and temperature
                 widget.CPU(**base(bg='color1'), padding=5),
                 widget.ThermalSensor(**base(bg='color1'), padding=5),
-                #calendar
+                # calendar
                 powerline('color2', 'color1'),
                 icon(bg="color2", text=' '),  # Icon: nf-fa-feed
                 widget.Clock(**base(bg='color2'), format='%d/%m/%Y - %H:%M '),
                 powerline('dark', 'color2'),
-                #systray
-                icon(fg='light',text='  '),
-                widget.PulseVolume(**base(bg='dark',fg='light')),
+                # systray
+                icon(fg='light', text='  '),
+                widget.PulseVolume(**base(bg='dark', fg='light')),
                 separator(),
-                widget.CapsNumLockIndicator(**base(bg='dark',fg='light')),
-                widget.BatteryIcon(**base(bg='dark')), #Baterry Icon
+                widget.CapsNumLockIndicator(**base(bg='dark', fg='light')),
+                widget.BatteryIcon(**base(bg='dark')),  # Baterry Icon
             ],
             24,
         ),
@@ -195,6 +142,7 @@ screens = [
 ]
 
 # Drag floating layouts.
+#TODO: I NEED THINK ABOUT THIS
 mouse = [
     Drag([mod], "Button1", lazy.window.set_position_floating(),
          start=lazy.window.get_position()),
