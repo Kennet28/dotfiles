@@ -5,141 +5,20 @@ from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
 from settings.theme import colors
 from settings.utils import base, separator, icon, powerline
-mod = "mod4"
+from settings.keys import keys,mod
+from settings.screens import screens
+from settings.widgets import widget_defaults,extension_defaults
+from settings.workspaces import groups
+
+
 terminal = guess_terminal()
-
-keys = [
-    # Switch between windows in current stack pane
-    Key([mod], "k", lazy.layout.down(),
-        desc="Move focus down in stack pane"),
-    Key([mod], "j", lazy.layout.up(),
-        desc="Move focus up in stack pane"),
-
-    # Move windows up or down in current stack
-    Key([mod, "control"], "k", lazy.layout.shuffle_down(),
-        desc="Move window down in current stack "),
-    Key([mod, "control"], "j", lazy.layout.shuffle_up(),
-        desc="Move window up in current stack "),
-
-    # Switch window focus to other pane(s) of stack
-    Key([mod], "space", lazy.layout.next(),
-        desc="Switch window focus to other pane(s) of stack"),
-
-    # Swap panes of split stack
-    Key([mod, "shift"], "space", lazy.layout.rotate(),
-        desc="Swap panes of split stack"),
-
-    Key([mod, "shift"], "Return", lazy.layout.toggle_split(),
-        desc="Toggle between split and unsplit sides of stack"),
-    Key([mod], "Return", lazy.spawn("alacritty"), desc="Launch terminal"),
-
-    # Toggle between different layouts as defined below
-    Key([mod], "Tab", lazy.next_layout(), desc="Toggle between layouts"),
-    Key([mod], "w", lazy.window.kill(), desc="Kill focused window"),
-
-    Key([mod, "control"], "r", lazy.restart(), desc="Restart qtile"),
-    Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown qtile"),
-    Key([mod], "r", lazy.spawncmd(),
-        desc="Spawn a command using a prompt widget"),
-    # Rofi
-    Key([mod], "m", lazy.spawn("rofi -show run")),
-    Key([mod, 'shift'], "m", lazy.spawn("rofi -show")),
-    # Volume
-    Key([], "XF86AudioLowerVolume", lazy.spawn("pamixer --decrease 5")),
-    Key([], "XF86AudioRaiseVolume", lazy.spawn("pamixer --increase 5")),
-    Key([], "XF86AudioMute", lazy.spawn("pamixer --toggle-mute")),
-    # Brightness
-    Key([], "XF86MonBrightnessUp", lazy.spawn("brightnessctl set +10%")),
-    Key([], "XF86MonBrightnessDown", lazy.spawn("brightnessctl set 10%-")),
-]
-# workspaces
-groups = [Group(i) for i in ["  ", "  ", "  ", "  ", " 甆 "]]
-
-for i, group in enumerate(groups):
-    actual_key = str(i+1)
-    keys.extend([
-        Key([mod], actual_key, lazy.group[group.name].toscreen()),
-        Key([mod, "shift"], actual_key, lazy.window.togroup(group.name))
-    ])
 
 #layouts
 layouts = [
     layout.MonadTall()
 ]
-#widgets styles
-widget_defaults = dict(
-    font='UbuntuMono Nerd Font Bold',
-    fontsize=14,
-    padding=1,
-)
-extension_defaults = widget_defaults.copy()
-# Screens
-screens = [
-    Screen(
-        bottom=bar.Bar(
-            [
-                # workspaces styles
-                widget.GroupBox(
-                    **base(fg='light'),
-                    font='UbuntuMono Nerd Font',
-                    fontsize=19,
-                    margin_y=3,
-                    margin_x=0,
-                    padding_y=8,
-                    padding_x=5,
-                    borderwidth=1,
-                    active=colors['active'],
-                    inactive=colors['inactive'],
-                    rounded=False,
-                    highlight_method='block',
-                    urgent_alert_method='block',
-                    urgent_border=colors['urgent'],
-                    this_current_screen_border=colors['focus'],
-                    this_screen_border=colors['grey'],
-                    other_current_screen_border=colors['dark'],
-                    other_screen_border=colors['dark'],
-                    disable_drag=True
-                ),
-                separator(),
-                # Window name
-                widget.WindowName(**base(fg='focus'), fontsize=14, padding=5),
-                separator(),
-                powerline('color4', 'dark'),
-                icon(bg="color4", text=' '),  # Icon: nf-fa-download
-                # updates
-                widget.CheckUpdates(
-                    background=colors['color4'],
-                    colour_have_updates=colors['text'],
-                    colour_no_updates=colors['text'],
-                    no_update_string='0',
-                    display_format='{updates}',
-                    update_interval=1800,
-                    custom_command='checkupdates',
-                ),
-                # Network
-                powerline('color3', 'color4'),
-                icon(bg="color3", text=' '),  # Icon: nf-fa-feed
-                widget.Net(**base(bg='color3'), interface='wlp2s0'),
-                powerline('color1', 'color3'),
-                #CPU and temperature
-                widget.CPU(**base(bg='color1'), padding=5),
-                widget.ThermalSensor(**base(bg='color1'), padding=5),
-                # calendar
-                powerline('color2', 'color1'),
-                icon(bg="color2", text=' '),  # Icon: nf-fa-feed
-                widget.Clock(**base(bg='color2'), format='%d/%m/%Y - %H:%M '),
-                powerline('dark', 'color2'),
-                # systray
-                icon(fg='light', text='  '),
-                widget.PulseVolume(**base(bg='dark', fg='light')),
-                separator(),
-                widget.CapsNumLockIndicator(**base(bg='dark', fg='light')),
-                widget.BatteryIcon(**base(bg='dark')),  # Baterry Icon
-            ],
-            24,
-        ),
-    ),
-]
+
+
 
 # Drag floating layouts.
 #TODO: I NEED THINK ABOUT THIS
